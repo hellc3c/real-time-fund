@@ -9,7 +9,7 @@ import * as qk from '../lib/query-keys';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { isTradingDay } from '../lib/tradingCalendar';
 
-import { DEFAULT_TZ, ONE_DAY_MS } from '@/app/constants';
+import { DEFAULT_FUND_DATA_SOURCE, DEFAULT_TZ, ONE_DAY_MS } from '@/app/constants';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -1008,10 +1008,11 @@ const sinaEstimateNetworthInflight = new Map();
 
 function normalizeValuationDataSource(dataSource) {
   const n = Number(dataSource);
+  if (n === 1) return 1;
   if (n === 2) return 2;
   if (n === 3) return 3;
   if (n === 4) return 4;
-  return 1;
+  return DEFAULT_FUND_DATA_SOURCE;
 }
 
 /**
@@ -1256,10 +1257,10 @@ export async function fetchFundsBestSources(fundCodes) {
 /**
  * 按基金编码与数据源类型获取估值（天天基金 fundgz 或新浪估算曲线末点）。
  * @param {string} code - 基金编码
- * @param {number | string} [dataSource=1] - 1 天天基金；2、3 新浪估算不同口径；4 Supabase QDII
+ * @param {number | string} [dataSource=DEFAULT_FUND_DATA_SOURCE] - 1 天天基金；2、3 新浪估算不同口径；4 Supabase QDII
  * @returns {Promise<UnifiedFundValuation>}
  */
-export async function fetchFundValuationBySource(code, dataSource = 1) {
+export async function fetchFundValuationBySource(code, dataSource = DEFAULT_FUND_DATA_SOURCE) {
   const c = code != null ? String(code).trim() : '';
   if (!c) throw new Error('基金编码无效');
 
@@ -1446,7 +1447,7 @@ export const fetchFundData = async (c, overrideDataSource) => {
   const code = c != null ? String(c).trim() : '';
   if (!code) return fetchFundDataFallback(c);
 
-  let dataSource = overrideDataSource || 1;
+  let dataSource = overrideDataSource ?? DEFAULT_FUND_DATA_SOURCE;
   let storedName = null;
   let storedValuationSource = null;
   if (!overrideDataSource) {
@@ -1529,7 +1530,8 @@ export const fetchFundData = async (c, overrideDataSource) => {
     }
 
     resolve({
-      ...baseData
+      ...baseData,
+      dataSource
     });
   });
 };

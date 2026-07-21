@@ -4,6 +4,7 @@
  * 规则：获取到最新日期的数据时，清掉所有老日期的数据，只保留当日分时点。
  */
 import { isArray, isPlainObject, isString } from 'lodash';
+import { DEFAULT_FUND_DATA_SOURCE } from '@/app/constants';
 import { storageStore } from '@/app/stores';
 
 const STORAGE_KEY = 'fundValuationTimeseries';
@@ -53,7 +54,7 @@ function toDateStr(gztimeOrNow) {
  */
 function getSeriesBySource(code, dataSource) {
   const all = getStored();
-  const ds = String(dataSource || 1);
+  const ds = String(dataSource ?? DEFAULT_FUND_DATA_SOURCE);
   const fundData = all[code];
   if (!isPlainObject(fundData)) return [];
   return isArray(fundData[ds]) ? fundData[ds] : [];
@@ -65,10 +66,10 @@ function getSeriesBySource(code, dataSource) {
  *
  * @param {string} code - 基金代码
  * @param {{ gsz?: number | null, gztime?: string | null }} payload - 估值与时间（来自接口）
- * @param {number} [dataSource=1] - 数据源编号
+ * @param {number} [dataSource=DEFAULT_FUND_DATA_SOURCE] - 数据源编号
  * @returns {Array<{ time: string, value: number, date: string }>} 该基金当前数据源的分时序列（按时间升序）
  */
-export function recordValuation(code, payload, dataSource = 1) {
+export function recordValuation(code, payload, dataSource = DEFAULT_FUND_DATA_SOURCE) {
   const value = payload?.gsz != null ? Number(payload.gsz) : NaN;
   if (!Number.isFinite(value)) return getSeriesBySource(code, dataSource);
 
@@ -87,7 +88,7 @@ export function recordValuation(code, payload, dataSource = 1) {
   const newPoint = { time: timeLabel, value, date: dateStr };
 
   const all = getStored();
-  const ds = String(dataSource || 1);
+  const ds = String(dataSource ?? DEFAULT_FUND_DATA_SOURCE);
   if (!isPlainObject(all[code])) all[code] = {};
   const list = isArray(all[code][ds]) ? all[code][ds] : [];
 
@@ -119,7 +120,7 @@ export function recordValuation(code, payload, dataSource = 1) {
 export function setValuationSeries(code, dataSource, series) {
   if (!code || !isArray(series) || series.length === 0) return;
   const all = getStored();
-  const ds = String(dataSource || 1);
+  const ds = String(dataSource ?? DEFAULT_FUND_DATA_SOURCE);
   if (!isPlainObject(all[code])) all[code] = {};
   all[code][ds] = series;
   setStored(all);
@@ -128,10 +129,10 @@ export function setValuationSeries(code, dataSource, series) {
 /**
  * 获取某基金当前数据源的分时序列（只读）
  * @param {string} code - 基金代码
- * @param {number} [dataSource=1] - 数据源编号
+ * @param {number} [dataSource=DEFAULT_FUND_DATA_SOURCE] - 数据源编号
  * @returns {Array<{ time: string, value: number, date: string }>}
  */
-export function getValuationSeries(code, dataSource = 1) {
+export function getValuationSeries(code, dataSource = DEFAULT_FUND_DATA_SOURCE) {
   return getSeriesBySource(code, dataSource);
 }
 
@@ -160,7 +161,7 @@ export function getAllValuationSeries(funds) {
   const dsMap = new Map();
   if (isArray(funds)) {
     for (const f of funds) {
-      if (f?.code) dsMap.set(f.code, String(f.dataSource || 1));
+      if (f?.code) dsMap.set(f.code, String(f.dataSource ?? DEFAULT_FUND_DATA_SOURCE));
     }
   }
   for (const [code, dsDataMap] of Object.entries(all)) {

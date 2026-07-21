@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { isArray, isBoolean, isEqual, isFunction, isObject, isString } from 'lodash';
 import { getFundCodesFromTagRecord } from '@/app/lib/fundHelpers';
-import { DEFAULT_SORT_RULES, SORT_DISPLAY_MODES } from '@/app/constants';
+import { DEFAULT_FUND_DATA_SOURCE, DEFAULT_SORT_RULES, SORT_DISPLAY_MODES } from '@/app/constants';
 
 /**
  * 签名函数：用于检测 funds 列表是否发生实质性变更（jzrq, dwjz 等核心字段）
@@ -166,7 +166,15 @@ export const useStorageStore = create((set, get) => ({
   initFunds: () => {
     if (typeof window !== 'undefined') {
       const saved = get().getItem('funds', []);
-      set({ funds: isArray(saved) ? saved : [] });
+      const savedFunds = isArray(saved) ? saved : [];
+      const migratedFunds = savedFunds.map((fund) => {
+        if (!isObject(fund) || (fund.dataSource !== undefined && fund.dataSource !== null)) return fund;
+        return { ...fund, dataSource: DEFAULT_FUND_DATA_SOURCE };
+      });
+      set({ funds: migratedFunds });
+      if (!isEqual(savedFunds, migratedFunds)) {
+        get().setItem('funds', JSON.stringify(migratedFunds));
+      }
     }
   },
 

@@ -23,6 +23,7 @@ import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-
 import { CSS } from '@dnd-kit/utilities';
 import { isArray, isFunction, isObject, isString, throttle } from 'lodash';
 import { Sparkles } from 'lucide-react';
+import { DEFAULT_FUND_DATA_SOURCE } from '@/app/constants';
 import MobileFundCardDrawer from './MobileFundCardDrawer';
 import MobileSettingModal from './MobileSettingModal';
 import MoveGroupModal from './MoveGroupModal';
@@ -1817,7 +1818,7 @@ const MobileFundTable = memo(function MobileFundTable({
         cell: (info) => {
           const original = info.row.original || {};
           const autoSource = !!original.rawFund?.autoSource;
-          const dataSource = original.rawFund?.dataSource || 1;
+          const dataSource = original.rawFund?.dataSource ?? DEFAULT_FUND_DATA_SOURCE;
           const text = autoSource ? `自动源${dataSource}` : `数据源${dataSource}`;
           const accuracyLabel = dataSourceAccuracyLabels?.[original.rawFund?.code || original.code];
           return (

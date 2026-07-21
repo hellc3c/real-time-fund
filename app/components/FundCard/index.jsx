@@ -28,7 +28,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isSameOrAfter);
 
-import { DEFAULT_TZ } from '@/app/constants';
+import { DEFAULT_FUND_DATA_SOURCE, DEFAULT_TZ } from '@/app/constants';
 import { isNavUpdated } from '@/app/lib/fundHelpers';
 const getBrowserTimeZone = () => {
   if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
@@ -224,7 +224,7 @@ export default function Index({
     const found = funds?.find((item) => item.code === fundCode);
     if (found) return found;
 
-    let ds = fallbackFund?.dataSource || 1;
+    let ds = fallbackFund?.dataSource ?? DEFAULT_FUND_DATA_SOURCE;
     if (typeof window !== 'undefined') {
       try {
         const saved = JSON.parse(localStorage.getItem('rtf_unadded_ds') || '{}');
@@ -283,7 +283,11 @@ export default function Index({
         try {
           const res = await fetchFundData(fundCode, f?.dataSource);
           if (!cancelled && res) {
-            setFetchedValuation((prev) => ({ ...prev, ...res, dataSource: f?.dataSource || 1 }));
+            setFetchedValuation((prev) => ({
+              ...prev,
+              ...res,
+              dataSource: f?.dataSource ?? DEFAULT_FUND_DATA_SOURCE
+            }));
           }
         } catch (e) {
           console.error('fetchFundData error', e);
@@ -552,7 +556,7 @@ export default function Index({
                 onClick={() => onDataSourceClick?.(f)}
               >
                 <span>{f.autoSource ? '自动源' : '数据源'}</span>
-                <strong>{f.dataSource || 1}</strong>
+                <strong>{f.dataSource ?? DEFAULT_FUND_DATA_SOURCE}</strong>
               </div>
             </TooltipTrigger>
             <TooltipContent>

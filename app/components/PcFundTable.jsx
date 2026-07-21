@@ -22,6 +22,7 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Sparkles } from 'lucide-react';
+import { DEFAULT_FUND_DATA_SOURCE } from '@/app/constants';
 import ConfirmModal from './ConfirmModal';
 import PcTableSettingModal from './PcTableSettingModal';
 import FundCard from './FundCard';
@@ -1588,7 +1589,7 @@ const PcFundTable = memo(function PcFundTable({
         cell: (info) => {
           const original = info.row.original || {};
           const autoSource = !!original.rawFund?.autoSource;
-          const dataSource = original.rawFund?.dataSource || 1;
+          const dataSource = original.rawFund?.dataSource ?? DEFAULT_FUND_DATA_SOURCE;
           const text = autoSource ? `自动源${dataSource}` : `数据源${dataSource}`;
           const accuracyLabel = dataSourceAccuracyLabels?.[original.rawFund?.code || original.code];
           return (

@@ -8,7 +8,7 @@ import { isArray, isNumber, isPlainObject, isString } from 'lodash';
 
 import { useStorageStore, storageStore, useUserStore } from '../stores';
 import { recordValuation, setValuationSeries as persistValuationSeries } from '../lib/valuationTimeseries';
-import { DAILY_EARNINGS_SCOPE_ALL } from '@/app/constants';
+import { DAILY_EARNINGS_SCOPE_ALL, DEFAULT_FUND_DATA_SOURCE } from '@/app/constants';
 import { asyncPool } from '../lib/asyncHelper';
 import {
   fetchFundData,
@@ -304,7 +304,7 @@ export function useRefreshManager({ scheduleDcaTrades, processPendingQueue, devi
 
           // 估值时序记录
           const storedFund = getStoredFundSnapshot(data.code);
-          const fundDs = storedFund?.dataSource || 1;
+          const fundDs = storedFund?.dataSource ?? DEFAULT_FUND_DATA_SOURCE;
           if (data.code != null && !data.noValuation && Number.isFinite(Number(data.gsz))) {
             if (data.fundValuationTimeseries && isPlainObject(data.fundValuationTimeseries)) {
               for (const [tsCode, tsList] of Object.entries(data.fundValuationTimeseries)) {

@@ -5,6 +5,9 @@
 /** 默认时区 */
 export const DEFAULT_TZ = 'Asia/Shanghai';
 
+/** 未显式选择时使用的基金估值数据源 */
+export const DEFAULT_FUND_DATA_SOURCE = 2;
+
 /** 一天的毫秒数 */
 export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 

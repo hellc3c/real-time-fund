@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useStorageStore, useUserStore } from '@/app/stores';
+import { DEFAULT_FUND_DATA_SOURCE } from '@/app/constants';
 import DataSourceAccuracyBadge from './DataSourceAccuracyBadge';
 
 function formatGszzlEstimate(gszzl) {
@@ -22,7 +23,7 @@ function formatGszzlEstimate(gszzl) {
 export default function FundDataSourceSelector({ fund, onClose, onSelect }) {
   const isAdded = useStorageStore((s) => s.funds?.some((item) => item.code === fund?.code));
   const user = useUserStore((s) => s.user);
-  const [sourceId, setSourceId] = useState('1');
+  const [sourceId, setSourceId] = useState(String(fund?.dataSource ?? DEFAULT_FUND_DATA_SOURCE));
   const [loading, setLoading] = useState(true);
   const [estimates, setEstimates] = useState({
     1: null,

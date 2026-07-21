@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { isArray, isNumber, isObject } from 'lodash';
 import { fetchBestValuationSource, fetchFundValuationBySource } from '@/app/api/fund';
+import { DEFAULT_FUND_DATA_SOURCE } from '@/app/constants';
 import { asyncPool } from '@/app/lib/asyncHelper';
 
 const TODAY_LABEL = '今日最准';
@@ -16,7 +17,7 @@ function getTodayStr() {
 async function resolveAccuracyLabel(row, todayStr) {
   const fund = row?.rawFund || row;
   const code = fund?.code != null ? String(fund.code).trim() : '';
-  const dataSource = Number(fund?.dataSource || 1);
+  const dataSource = Number(fund?.dataSource ?? DEFAULT_FUND_DATA_SOURCE);
   const actualZzl = isNumber(fund?.zzl) && Number.isFinite(fund.zzl) ? fund.zzl : null;
 
   if (!code || actualZzl == null || !fund?.jzrq || !Number.isFinite(dataSource)) return null;
@@ -73,7 +74,7 @@ export function useDataSourceAccuracyLabels(rows, enabled) {
         const fund = row?.rawFund || row;
         const code = fund?.code != null ? String(fund.code).trim() : '';
         if (!code) return '';
-        return [code, fund?.dataSource || 1, fund?.jzrq || '', fund?.zzl ?? ''].join(':');
+        return [code, fund?.dataSource ?? DEFAULT_FUND_DATA_SOURCE, fund?.jzrq || '', fund?.zzl ?? ''].join(':');
       })
       .filter(Boolean)
       .join('|');
@@ -90,7 +91,7 @@ export function useDataSourceAccuracyLabels(rows, enabled) {
       const fund = row?.rawFund || row;
       const code = fund?.code != null ? String(fund.code).trim() : '';
       if (!code) return;
-      const key = [code, fund?.dataSource || 1, fund?.jzrq || '', fund?.zzl ?? ''].join(':');
+      const key = [code, fund?.dataSource ?? DEFAULT_FUND_DATA_SOURCE, fund?.jzrq || '', fund?.zzl ?? ''].join(':');
       candidates.push({ code, key, row });
     });
 
